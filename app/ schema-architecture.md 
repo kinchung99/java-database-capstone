@@ -1,0 +1,19 @@
+# Schema Architecture Document
+
+## Section 1: Architecture Summary
+
+This Spring Boot application employs a hybrid architecture utilizing both Spring MVC for server-side view rendering and RESTful web services for programmatic data interaction. Web interfaces such as the Admin Dashboard and Doctor Dashboard rely on Thymeleaf templates to render HTML dynamically, while modules like Appointments, Patient Dashboard, and Patient Records expose JSON-based REST APIs. 
+
+To satisfy different data storage requirements, the application integrates a dual-database persistence setup. Relational data—including Patient, Doctor, Appointment, and Admin entities—is managed using a MySQL database via JPA ORM mappings. Unstructured and document-oriented data, specifically Prescriptions, is stored in a MongoDB database using MongoDB document models. Requests from both Thymeleaf MVC and REST controllers route through a unified Service Layer, which enforces business logic before delegating operations to the corresponding MySQL or MongoDB Spring Data Repositories.
+
+---
+
+## Section 2: Flow of Data and Control
+
+1. **User Request Initiation**: A user accesses frontend dashboards (AdminDashboard, DoctorDashboard) or interacts with REST-based modules (Appointments, PatientDashboard, PatientRecord).
+2. **Controller Routing**: Incoming requests are captured and routed based on their endpoint—either to Thymeleaf Controllers (for server-side page rendering) or REST Controllers (for JSON API processing).
+3. **Service Layer Processing**: The controllers execute business logic by making calls to a common Service Layer, which coordinates the core operations of the application.
+4. **Repository Delegation**: The Service Layer delegates persistence requests to the appropriate data access layer, utilizing MySQL Repositories (Spring Data JPA) for relational operations or MongoDB Repositories for document operations.
+5. **Database Access**: The repositories execute queries against their respective persistence stores—communicating with the MySQL Database for relational transactions or the MongoDB Database for document storage.
+6. **Data Entity & Document Mapping**: Retrieved raw records and documents are mapped to their respective object models (JPA Entities for MySQL schemas or Document Models for MongoDB collections).
+7. **Model Construction & View/Response Rendering**: The domain models (Patient, Doctor, Appointment, Admin, or Prescription) are assembled and returned back up to the Service Layer and Controllers, which ultimately render HTML views or construct JSON payload responses for the user interface.
